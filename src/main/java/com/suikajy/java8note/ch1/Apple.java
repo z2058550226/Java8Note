@@ -3,6 +3,16 @@ package com.suikajy.java8note.ch1;
 public class Apple {
 
     private String color;
+    private int weight;
+    private String country;
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
     public String getColor() {
         return color;
@@ -11,8 +21,6 @@ public class Apple {
     public void setColor(String color) {
         this.color = color;
     }
-
-    private int weight;
 
     public int getWeight() {
         return weight;
