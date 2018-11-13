@@ -2,19 +2,25 @@ package com.suikajy.java8note.ch5_use_stream;
 
 import com.suikajy.java8note.ch4_stream.Dish;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.OptionalInt;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.IntSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.suikajy.java8note.ch4_stream.Dish.menu;
-import static java.util.stream.Collectors.toList;
+import static java.util.Comparator.*;
+import static java.util.stream.Collectors.*;
 
 
+@SuppressWarnings("Duplicates")
 public class Test1 {
 
     public static void main(String[] args) {
@@ -77,13 +83,71 @@ public class Test1 {
                 .filter(n -> n % 2 == 0);
         System.out.println(evenNumbers.count()); // 50
 
-        // 求100以内的勾股数
+// 求100以内的勾股数
         IntStream.rangeClosed(1, 100).boxed()
                 .flatMap(a ->
                         IntStream.rangeClosed(1, 100)
                                 .mapToObj(b -> new double[]{a, b, Math.sqrt(a * a + b * b)})
                                 .filter(t -> t[2] % 1 == 0)
-                ).forEach(it -> System.out.println(it[0]));
+                ).forEach(it ->
+                System.out.println(
+                        doubleJoinToString(it, "", "", ", ", d -> (int) d + "")));
+        long uniqueWords = 0;
+        try (Stream<String> lines =
+                     Files.lines(Paths.get("data.txt"), Charset.defaultCharset())) {
+            uniqueWords = lines.flatMap(line -> Arrays.stream(line.split(" ")))
+                    .distinct()
+                    .count();
+        } catch (IOException e) {
+        }
+        IntSupplier fib = new IntSupplier() {
+            private int previous = 0;
+            private int current = 1;
+
+            public int getAsInt() {
+                int oldPrevious = this.previous;
+                int nextValue = this.previous + this.current;
+                this.previous = this.current;
+                this.current = nextValue;
+                return oldPrevious;
+            }
+        };
+        IntStream.generate(fib).limit(10).forEach(System.out::println);
+
+        Comparator<Dish> dishCaloriesComparator =
+                comparingInt(Dish::getCalories);
+        Optional<Dish> mostCalorieDish =
+                menu.stream()
+                        .collect(maxBy(dishCaloriesComparator));
+        Map<Dish.Type, Map<CaloricLevel, List<Dish>>> dishesByTypeCaloricLevel =
+                menu.stream().collect(
+                        groupingBy(Dish::getType,
+                                groupingBy(dish -> {
+                                    if (dish.getCalories() <= 400) return CaloricLevel.DIET;
+                                    else if (dish.getCalories() <= 700) return CaloricLevel.NORMAL;
+                                    else return CaloricLevel.FAT;
+                                })
+                        )
+                );
+
+//Map<Dish.Type, Optional<Dish>> mostCaloricByType =
+//        menu.stream()
+//                .collect(groupingBy(Dish::getType,
+//                        maxBy(comparingInt(Dish::getCalories))));
+Map<Dish.Type, Dish> mostCaloricByType =
+        menu.stream()
+                .collect(groupingBy(Dish::getType,
+                        collectingAndThen(
+                                maxBy(comparingInt(Dish::getCalories)),
+                                Optional::get)));
+        Map<Dish.Type, Set<CaloricLevel>> caloricLevelsByType =
+                menu.stream().collect(
+                        groupingBy(Dish::getType, mapping(
+                                dish -> { if (dish.getCalories() <= 400) return CaloricLevel.DIET;
+                                else if (dish.getCalories() <= 700) return CaloricLevel.NORMAL;
+                                else return CaloricLevel.FAT; },
+                                toCollection(HashSet::new) )));
+        System.out.println(caloricLevelsByType);
     }
 
     public static <T> String joinToString(T[] arr, Function<? super T, String> transform) {
@@ -95,6 +159,23 @@ public class Test1 {
         sb.append(prefix);
         boolean isEmpty = true;
         for (T t : arr) {
+            if (isEmpty) {
+                sb.append(transform.apply(t));
+                isEmpty = false;
+            } else {
+                sb.append(separator);
+                sb.append(transform.apply(t));
+            }
+        }
+        sb.append(postfix);
+        return sb.toString();
+    }
+
+    public static String doubleJoinToString(double[] arr, String prefix, String postfix, String separator, DoubleFunction<String> transform) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix);
+        boolean isEmpty = true;
+        for (double t : arr) {
             if (isEmpty) {
                 sb.append(transform.apply(t));
                 isEmpty = false;
@@ -128,5 +209,7 @@ public class Test1 {
             super(name);
         }
     }
+
+    public enum CaloricLevel {DIET, NORMAL, FAT}
 
 }
