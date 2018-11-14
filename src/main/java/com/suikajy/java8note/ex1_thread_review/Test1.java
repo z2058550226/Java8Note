@@ -6,30 +6,18 @@ public class Test1 {
 
     }
 
-    public static class LiftOff implements Runnable {
+    private static void test1() {
+        LiftOff launch = new LiftOff();
+        // 由主线程直接驱动一个Runnable
+        launch.run();
+    }
 
-        protected int countDown = 10; // Default
-        private static int taskCount = 0;
-        private final int id = taskCount++;
-
-        public LiftOff() {
+    private static void test2() {
+        for (int i = 0; i < 10; i++) {
+            Thread t = new Thread(new LiftOff());
+            t.start();
         }
-
-        public LiftOff(int countDown) {
-            this.countDown = countDown;
-        }
-
-        public String status() {
-            return "#" + id + "(" + (countDown > 0 ? countDown : "Liftoff") + ").";
-        }
-
-        @Override
-        public void run() {
-            while (countDown-- > 0) {
-                System.out.println(status());
-                Thread.yield();
-            }
-        }
+        System.out.println("Waiting for LiftOff");
     }
 
 }
