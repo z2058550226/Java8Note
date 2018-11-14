@@ -1,4 +1,4 @@
-package com.suikajy.java8note.ex1_thread_review;
+package com.suikajy.java8note.ex1_thread_review.part1_concurrency;
 
 public class LiftOff implements Runnable {
 
