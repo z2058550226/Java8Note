@@ -1,6 +1,6 @@
-package com.suikajy.java8note.ex1_thread_review.part1_concurrency.threadPool;
+package com.suikajy.java8note.ex1_thread_review.part2_concurrency.threadPool;
 
-import com.suikajy.java8note.ex1_thread_review.part1_concurrency.LiftOff;
+import com.suikajy.java8note.ex1_thread_review.part2_concurrency.LiftOff;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

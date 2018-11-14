@@ -1,4 +1,4 @@
-package com.suikajy.java8note.ex1_thread_review.part1_concurrency;
+package com.suikajy.java8note.ex1_thread_review.part2_concurrency;
 
 public class Test1 {
 
