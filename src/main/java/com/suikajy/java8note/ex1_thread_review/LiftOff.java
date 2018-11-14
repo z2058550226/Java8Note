@@ -21,7 +21,9 @@ public class LiftOff implements Runnable {
     public void run() {
         while (countDown-- > 0) {
             System.out.print(status());
-            // 一种放权标志，告诉调度器，先别管我了。
+            // 让步操作，一种对调度器的提示，提醒调度器可以执行别的任务了
+            // 这个操作十分鸡肋，它仅仅是一种提示。
+            // 如果有重要的控制或在调整应用时都不能依赖它。在实际使用中它经常被误用。
             Thread.yield();
         }
     }
