@@ -13,7 +13,7 @@ class ExplicitPairManager1 extends PairManager {
 
     // Synchronized the entire method
     @Override
-    public synchronized void increment() {
+    public void increment() {
         lock.lock();
         try {
             p.incrementX();
@@ -22,6 +22,17 @@ class ExplicitPairManager1 extends PairManager {
         } finally {
             lock.unlock();
         }
+    }
+
+    @Override
+    public Pair getPair() {
+        lock.lock();
+        try {
+            return super.getPair();
+        } finally {
+            lock.unlock();
+        }
+
     }
 
 }
@@ -43,9 +54,25 @@ class ExplicitPairManager2 extends PairManager {
         }
         store(temp);
     }
+
+    // 如果使用可重入锁，那么这个类中原本使用synchronized的方法也要改成对应锁来
+    // 控制访问，因为父类中的synchronized默认指定this作为锁对象，所以这会导致锁对象不一致
+    // 因此在此显式使用可重入锁来重写这个方法。
+    @Override
+    public Pair getPair() {
+        lock.lock();
+        try {
+            return super.getPair();
+        } finally {
+            lock.unlock();
+        }
+
+    }
 }
 
 public class ExplicitCriticalSection {
+
+//    public static Lock sLock = new ReentrantLock();
 
     public static void main(String[] args) {
         PairManager
