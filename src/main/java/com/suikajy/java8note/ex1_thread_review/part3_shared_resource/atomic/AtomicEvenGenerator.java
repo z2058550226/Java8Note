@@ -1,4 +1,4 @@
-package com.suikajy.java8note.ex1_thread_review.part3;
+package com.suikajy.java8note.ex1_thread_review.part3_shared_resource.atomic;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

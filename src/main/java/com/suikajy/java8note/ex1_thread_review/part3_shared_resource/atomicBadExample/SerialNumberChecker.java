@@ -1,4 +1,4 @@
-package com.suikajy.java8note.ex1_thread_review.part3;
+package com.suikajy.java8note.ex1_thread_review.part3_shared_resource.atomicBadExample;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,10 +57,9 @@ public class SerialNumberChecker {
         for (int i = 0; i < SIZE; i++) {
             exec.execute(new SerialChecker());
         }
-        if (args.length > 0) {
-            TimeUnit.SECONDS.sleep(Integer.valueOf(args[0]));
-            System.out.println("No duplicates detected");
-            System.exit(0);
-        }
+        exec.shutdown();
+        TimeUnit.SECONDS.sleep(3);
+        System.out.println("No duplicates detected");
+        System.exit(0);
     }
 }
