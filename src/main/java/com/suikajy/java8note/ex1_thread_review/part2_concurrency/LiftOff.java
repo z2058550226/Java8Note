@@ -1,5 +1,8 @@
 package com.suikajy.java8note.ex1_thread_review.part2_concurrency;
 
+/**
+ * 一个倒计时起飞任务
+ */
 public class LiftOff implements Runnable {
 
     protected int countDown = 10; // Default
