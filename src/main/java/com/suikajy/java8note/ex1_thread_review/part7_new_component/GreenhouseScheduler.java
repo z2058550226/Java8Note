@@ -6,6 +6,12 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ScheduledExecutor demo
+ *
+ * ScheduledThreadPoolExecutor这个类和普通的Executor的区别就是他的任务可以不立即执行，
+ * 它的任务可以延迟执行，或者重复执行，就像这个demo的schedule和repeat函数一样。
+ *
+ * 注意这个类中volatile和synchronized都得到了适当的使用，volatile通常用来修饰一种状态，
+ * 并且这个状态需要被多个线程访问。
  */
 
 public class GreenhouseScheduler {
@@ -13,6 +19,7 @@ public class GreenhouseScheduler {
     private volatile boolean light = false;
     private volatile boolean water = false;
     private String thermostat = "Day";
+    private ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(10);
 
     public synchronized String getThermostat() {
         return thermostat;
@@ -21,8 +28,6 @@ public class GreenhouseScheduler {
     public synchronized void setThermostat(String thermostat) {
         this.thermostat = thermostat;
     }
-
-    ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(10);
 
     public void schedule(Runnable event, long delay) {
         scheduler.schedule(event, delay, TimeUnit.MILLISECONDS);
