@@ -186,7 +186,7 @@ abstract class Robot implements Runnable {
         assembler = null; // Disconnect from the Assembler
         // Put ourselves back in the available pool:
         pool.release(this);
-        while (engage = false)// Power down
+        while (!engage)// Power down
             wait();
     }
 
