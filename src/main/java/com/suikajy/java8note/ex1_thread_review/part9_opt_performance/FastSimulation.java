@@ -25,7 +25,29 @@ public class FastSimulation {
 
         @Override
         public void run() {
+            while (!Thread.interrupted()) {
+                // Randomly select an element to work on:
+                int element = rand.nextInt(N_ELEMENTS);
+                for (int i = 0; i < N_GENES; i++) {
+                    int previous = element - 1;
+                    if (previous < 0) previous = N_ELEMENTS - 1;
+                    int next = element + 1;
+                    if (next >= N_ELEMENTS) next = 0;
+                    int oldValue = GRID[element][i].get();
+                    // Perform some kind of modeling calculation:
+                    int newValue = oldValue + GRID[previous][i].get() + GRID[next][i].get();
+                    newValue /= 3; // Average the three values
 
+                    // 这里便是乐观锁的处理方式，先比较原值，如果原值改变，那么这里放弃处理，
+                    // 而不是像加锁线程那样，进行锁的等待。
+                    if (!GRID[element][i].compareAndSet(oldValue, newValue)) {
+                        // Policy here to deal with failure. Here, we
+                        // just report it and ignore it; our model
+                        // will eventually deal with it.
+                        System.out.println("Old value changed from " + oldValue);
+                    }
+                }
+            }
         }
     }
 
